@@ -31,13 +31,14 @@ const SignUpScreen: React.FC = () => {
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [funFact, setFunFact] = useState("");
+  const [bio, setBio] = useState("");
   const [graduationYear, setGraduationYear] = useState("");
   const [college, setCollege] = useState("");
   const navigation = useNavigation<NavigationProps>();
   const [modalVisible, setModalVisible] = useState(false);
   const [gradYear, setGradYear] = useState<string | null>(null);
   const [gradYearModalVisible, setGradYearModalVisible] = useState(false);
+  const [password, setPassword] = useState("");
 
   // Function to pick an image for the profile
   const pickImage = async () => {
@@ -63,7 +64,15 @@ const SignUpScreen: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    if (!name || !email || !college || !funFact || !gradYear || !profilePic) {
+    if (
+      !name ||
+      !email ||
+      !college ||
+      !bio ||
+      !gradYear ||
+      !profilePic ||
+      !password
+    ) {
       Alert.alert(
         "Missing Information",
         "Please fill out all fields before signing up.",
@@ -71,7 +80,7 @@ const SignUpScreen: React.FC = () => {
       return;
     }
 
-    console.log({ name, email, college, funFact, gradYear, profilePic });
+    console.log({ name, email, college, bio, gradYear, profilePic, password });
   };
   const colleges = ["Florida State University"];
   const gradYears = Array.from({ length: 10 }, (_, i) => (2025 + i).toString());
@@ -79,14 +88,13 @@ const SignUpScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       {/* Custom Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate("Opening")}>
+      <View style={[styles.header]}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={30} color="#014AAD" />
         </TouchableOpacity>
+        {/* Title */}
+        <Text style={styles.title}>Let's Get Started</Text>
       </View>
-
-      {/* Title */}
-      <Text style={styles.title}>Let's Get Started</Text>
 
       {/* Profile Picture */}
       <View style={styles.profilePictureContainer}>
@@ -213,12 +221,15 @@ const SignUpScreen: React.FC = () => {
         </View>
       </Modal>
 
-      {/* Fun Fact */}
+      {/* Bio*/}
       <Text style={styles.text}> Bio</Text>
+      <TextInput style={styles.input} value={bio} onChangeText={setBio} />
+      {/* passwrod*/}
+      <Text style={styles.text}> Password</Text>
       <TextInput
         style={styles.input}
-        value={funFact}
-        onChangeText={setFunFact}
+        value={password}
+        onChangeText={setPassword}
       />
 
       {/* Submit Button */}
@@ -241,11 +252,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   title: {
-    fontSize: 40,
+    fontSize: 35,
     fontWeight: "bold",
     textAlign: "center",
     color: "#014AAD",
-    marginBottom: 32,
   },
 
   input: {
@@ -253,14 +263,14 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
-    marginBottom: 16,
+    marginBottom: 4,
     paddingLeft: 16,
     fontSize: 16,
   },
   header: {
     width: "100%",
-    marginTop: 40,
-    height: 30,
+    marginTop: 20,
+    height: 100,
     justifyContent: "center",
   },
 

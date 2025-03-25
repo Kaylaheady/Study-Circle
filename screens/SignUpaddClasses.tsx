@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     marginTop: 20,
-    backgroundColor: "#014AAD",
+    backgroundColor: "#89c7d6",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",

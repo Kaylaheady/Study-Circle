@@ -17,6 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Picker } from "@react-native-picker/picker";
+import { supabase } from "../supabase";
 
 type RootStackParamList = {
   Opening: undefined;
@@ -63,7 +64,7 @@ const SignUpScreen: React.FC = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (
       !name ||
       !email ||
@@ -80,8 +81,25 @@ const SignUpScreen: React.FC = () => {
       return;
     }
 
-    console.log({ name, email, college, bio, gradYear, profilePic, password });
+    const { data, error } = await supabase.from("users").insert([
+      {
+        name,
+        email,
+        college,
+        bio,
+        gradYear,
+        profilePic,
+        password, // Ideally, hash this before storing
+      },
+    ]);
+
+    if (error) {
+      Alert.alert("Error", error.message);
+    } else {
+      navigation.navigate("SignUpaddClasses");
+    }
   };
+
   const colleges = ["Florida State University"];
   const gradYears = Array.from({ length: 10 }, (_, i) => (2025 + i).toString());
 

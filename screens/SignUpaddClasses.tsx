@@ -5,15 +5,17 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { supabase } from "../supabase";
 
 // Define RootStackParamList type
 type RootStackParamList = {
   SignUpaddClasses: undefined;
-  NextSignUpScreen: undefined; // Add other screens here
+  NextSignUpScreen: undefined;
 };
 
 // Define navigation type
@@ -24,13 +26,13 @@ type SignUpClassesScreenNavigationProp = StackNavigationProp<
 
 const classOptions = [
   "COP 4090L Software Engineering Capstone",
-  "COP 4090 Software Engineering ",
+  "COP 4090 Software Engineering",
   "Physics 201",
   "Mac 2311 Calculus I",
   "Mac 2312 Calculus II",
   "BSC 2010 Biology I",
   "COP 3330 Data Structures",
-  "Bsc 2011 Biology II",
+  "BSC 2011 Biology II",
   "ENC 1101 English I",
   "ENC 2135 English II",
   "CHM 1045 Chemistry I",
@@ -41,6 +43,7 @@ const classOptions = [
 const SignUpaddClasses: React.FC = () => {
   const navigation = useNavigation<SignUpClassesScreenNavigationProp>();
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const toggleClassSelection = (className: string) => {
     setSelectedClasses((prevSelected) =>
@@ -48,6 +51,38 @@ const SignUpaddClasses: React.FC = () => {
         ? prevSelected.filter((c) => c !== className)
         : [...prevSelected, className],
     );
+  };
+
+  const handleSignUp = async () => {
+    if (selectedClasses.length === 0) {
+      Alert.alert(
+        "Error",
+        "Please select at least one class before proceeding.",
+      );
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+      if (userError || !user) throw new Error("User not found");
+
+      const { error } = await supabase
+        .from("profiles") // Adjust table name if needed
+        .update({ classes: selectedClasses })
+        .eq("id", user.id);
+
+      if (error) throw error;
+
+      navigation.navigate("NextSignUpScreen");
+    } catch (error) {
+      Alert.alert("Error", (error as Error).message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -89,15 +124,12 @@ const SignUpaddClasses: React.FC = () => {
       {/* Next Button */}
       <TouchableOpacity
         style={styles.nextButton}
-        onPress={() => {
-          if (selectedClasses.length === 0) {
-            alert("Please select at least one class before proceeding.");
-            return;
-          }
-          navigation.navigate("NextSignUpScreen"); // Replace with actual next screen
-        }}
+        onPress={handleSignUp}
+        disabled={loading}
       >
-        <Text style={styles.nextButtonText}> Sign Up</Text>
+        <Text style={styles.nextButtonText}>
+          {loading ? "Saving..." : "Sign Up"}
+        </Text>
       </TouchableOpacity>
     </View>
   );

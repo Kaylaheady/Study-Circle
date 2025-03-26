@@ -5,10 +5,18 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = "https://ssolcjnuddlznarnojud.supabase.co";
+const supabaseAnonKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzb2xjam51ZGRsem5hcm5vanVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEwNTk1MjcsImV4cCI6MjA1NjYzNTUyN30.kz2vUx7DAvbEzzOvff48o51z-wp4i23Sb9Jypt9Lnro"; // Replace with your actual key (keep it secret)
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 type RootStackParamList = {
   Opening: undefined;
@@ -25,8 +33,17 @@ const SignInScreen: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignIn = () => {
-    navigation.navigate("Home");
+  const handleSignIn = async () => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: username,
+      password: password,
+    });
+
+    if (error) {
+      Alert.alert("Sign In Failed", error.message);
+    } else {
+      navigation.navigate("Home");
+    }
   };
 
   return (
@@ -34,17 +51,17 @@ const SignInScreen: React.FC = () => {
       {/* Custom Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-          {/* Directly navigates to Home */}
           <Ionicons name="arrow-forward" size={30} color="#014AAD" />
         </TouchableOpacity>
       </View>
+
       {/* Title */}
       <Text style={styles.title}>Sign In</Text>
 
       {/* Username Input */}
       <TextInput
         style={styles.input}
-        placeholder="Username"
+        placeholder="Email"
         value={username}
         onChangeText={setUsername}
       />

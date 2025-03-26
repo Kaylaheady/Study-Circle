@@ -4,8 +4,16 @@ import { createStackNavigator } from "@react-navigation/stack";
 import OpeningScreen from "./screens/OpeningScreen";
 import SignInScreen from "./screens/SignInScreen";
 import SignUpScreen from "./screens/SignUpScreen";
+import SignUpaddClasses from "./screens/SignUpaddClasses";
+import HomeScreen from "./screens/HomeScreen";
 
 const Stack = createStackNavigator();
+type RootStackParamList = {
+  Opening: undefined;
+  SignIn: undefined;
+  SignUp: undefined;
+  SignUpaddClasses: undefined;
+};
 
 export default function App() {
   return (
@@ -19,12 +27,22 @@ export default function App() {
         <Stack.Screen
           name="SignIn"
           component={SignInScreen}
-          options={{ title: "Sign In" }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="SignUp"
           component={SignUpScreen}
-          options={{ title: "Sign Up" }}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="SignUpaddClasses"
+          component={SignUpaddClasses}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

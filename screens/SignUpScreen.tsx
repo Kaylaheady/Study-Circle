@@ -23,17 +23,16 @@ type RootStackParamList = {
   Opening: undefined;
   SignIn: undefined;
   SignUp: undefined;
-  SignUpaddClasses: undefined;
+  SignUpaddClasses: { userID: string };
 };
 
 type NavigationProps = StackNavigationProp<RootStackParamList, "SignUp">;
 
 const SignUpScreen: React.FC = () => {
-  const [profilePic, setProfilePic] = useState<string | null>(null);
+  const [profilepicture, setProfilePic] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [bio, setBio] = useState("");
-  const [graduationYear, setGraduationYear] = useState("");
   const [college, setCollege] = useState("");
   const navigation = useNavigation<NavigationProps>();
   const [modalVisible, setModalVisible] = useState(false);
@@ -43,7 +42,6 @@ const SignUpScreen: React.FC = () => {
 
   // Function to pick an image for the profile
   const pickImage = async () => {
-    // Request permission to access the gallery (for iOS)
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
       alert("Permission to access media library is required!");
@@ -65,13 +63,21 @@ const SignUpScreen: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const trimmedEmail = email.trim().toLowerCase();
+
+    if (!emailRegex.test(trimmedEmail) || !trimmedEmail.endsWith(".edu")) {
+      Alert.alert("Invalid Email", "Please enter a valid .edu email address.");
+      return;
+    }
+
     if (
       !name ||
       !email ||
       !college ||
       !bio ||
       !gradYear ||
-      !profilePic ||
+      !profilepicture ||
       !password
     ) {
       Alert.alert(
@@ -81,22 +87,69 @@ const SignUpScreen: React.FC = () => {
       return;
     }
 
-    const { data, error } = await supabase.from("users").insert([
-      {
-        name,
-        email,
-        college,
-        bio,
-        gradYear,
-        profilePic,
-        password, // Ideally, hash this before storing
-      },
-    ]);
+    try {
+      const {
+        data: { session },
+        error: signUpError,
+      } = await supabase.auth.signUp({
+        email: trimmedEmail,
+        password,
+      });
 
-    if (error) {
-      Alert.alert("Error", error.message);
-    } else {
-      navigation.navigate("SignUpaddClasses");
+      if (signUpError) {
+        console.error("Sign up error:", signUpError.message);
+        Alert.alert("Sign Up Error", signUpError.message);
+        return;
+      }
+
+      const userID = session?.user.id;
+      console.log("Session:", session);
+      if (!userID) {
+        console.error("User ID not found after sign up.");
+        Alert.alert("Sign Up Error", "Could not retrieve user ID.");
+        return;
+      }
+      // Upload profile picture
+      const imageData = await fetch(profilepicture);
+      const blob = await imageData.blob();
+      const { data: imageUploadData, error: imageUploadError } =
+        await supabase.storage
+          .from("profilepictures") // Ensure you're using the correct bucket name
+          .upload(`user-${userID}.jpg`, blob, {
+            contentType: "image/jpeg",
+            upsert: true,
+          });
+
+      if (imageUploadError) {
+        console.error("Upload error:", imageUploadError.message); // Log error message
+        Alert.alert("Upload Error", "Failed to upload profile picture.");
+        return;
+      }
+      console.log("Image upload data:", imageUploadData); // Debugging line
+
+      const { error: userDataError } = await supabase.from("user_data").insert([
+        {
+          id: userID,
+          name,
+          email,
+          college,
+          bio,
+          gradYear,
+          profilepicture: imageUploadData.path,
+        },
+      ]);
+
+      if (userDataError) {
+        console.error("Insert error:", userDataError.message);
+        Alert.alert("Error", "Could not save user data.");
+        return;
+      }
+
+      navigation.navigate("SignUpaddClasses", { userID });
+      return true;
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      Alert.alert("Error", "Something went wrong. Please try again.");
     }
   };
 
@@ -117,8 +170,11 @@ const SignUpScreen: React.FC = () => {
       {/* Profile Picture */}
       <View style={styles.profilePictureContainer}>
         <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
-          {profilePic ? (
-            <Image source={{ uri: profilePic }} style={styles.profileImage} />
+          {profilepicture ? (
+            <Image
+              source={{ uri: profilepicture }}
+              style={styles.profileImage}
+            />
           ) : (
             <Text style={styles.imageText}>Profile Picture</Text>
           )}
@@ -251,12 +307,7 @@ const SignUpScreen: React.FC = () => {
       />
 
       {/* Submit Button */}
-      <TouchableOpacity
-        style={styles.nextButton}
-        onPress={() => {
-          navigation.navigate("SignUpaddClasses"); // Navigate to next screen
-        }}
-      >
+      <TouchableOpacity style={styles.nextButton} onPress={handleSubmit}>
         <Text style={styles.nextButtonText}>Next</Text>
       </TouchableOpacity>
     </View>

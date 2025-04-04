@@ -6,17 +6,7 @@ const profiles = [
   { id: 1, name: "Alex", age: 22, image: "https://via.placeholder.com/300" },
   { id: 2, name: "Jordan", age: 25, image: "https://via.placeholder.com/300" },
   { id: 3, name: "Taylor", age: 23, image: "https://via.placeholder.com/300" },
-  { id: 4, name: "Sam", age: 24, image: "../assets/logo.png" },
-  { id: 5, name: "Chris", age: 26, image: "https://via.placeholder.com/300" },
-  { id: 1, name: "Alex", age: 22, image: "https://via.placeholder.com/300" },
-  { id: 2, name: "Jordan", age: 25, image: "https://via.placeholder.com/300" },
-  { id: 3, name: "Taylor", age: 23, image: "https://via.placeholder.com/300" },
-  { id: 4, name: "Sam", age: 24, image: "../assets/logo.png" },
-  { id: 5, name: "Chris", age: 26, image: "https://via.placeholder.com/300" },
-  { id: 1, name: "Alex", age: 22, image: "https://via.placeholder.com/300" },
-  { id: 2, name: "Jordan", age: 25, image: "https://via.placeholder.com/300" },
-  { id: 3, name: "Taylor", age: 23, image: "https://via.placeholder.com/300" },
-  { id: 4, name: "Sam", age: 24, image: "../assets/logo.png" },
+  { id: 4, name: "Sam", age: 24, image: require("../assets/logo.png") },
   { id: 5, name: "Chris", age: 26, image: "https://via.placeholder.com/300" },
 ];
 
@@ -47,18 +37,25 @@ const HomeScreen: React.FC = () => {
           renderCard={(profile) =>
             profile ? (
               <View style={styles.card}>
-                {/* <Image source={{ uri: profile.image }} style={styles.image} /> */}
-                {/* <View style={styles.name}>
-                  <Text style={styles.name}>
-                    {profile.name}, {profile.age}
+                <Image
+                  source={
+                    typeof profile.image === "string"
+                      ? { uri: profile.image }
+                      : profile.image
+                  }
+                  style={styles.image}
+                />
+                <View style={styles.nameContainer}>
+                  <Text style={styles.nameText}>
+                    {profile.name}
+                    {profile.age ? `, ${profile.age}` : ""}
                   </Text>
-                </View> */}
+                </View>
               </View>
             ) : null
           }
           onSwipedRight={handleSwipeRight}
           onSwipedLeft={handleSwipeLeft}
-          cardIndex={profileIndex}
           backgroundColor={"#fff"}
           stackSize={3}
         />
@@ -78,41 +75,39 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 300,
-    height: 90,
+    height: 100,
     alignSelf: "center",
-    marginTop: 60,
+    marginTop: 50,
   },
   swiperContainer: {
-    width: 380, // Fixed width for the swiper container
-    height: 630, // Fixed height for the swiper container
-    borderColor: "blue", // Optional for debugging
-    borderWidth: 1, // Optional for debugging
-    marginTop: -30, // Adjust marginTop to move the container closer to the top
-    paddingBottom: 0, // Remove paddingBottom if you want it to be closer to the top
+    width: 380,
+    marginTop: -90,
+    alignItems: "center",
+    justifyContent: "center",
   },
   card: {
-    width: "100%", // Ensure card takes up the full width of the swiper container
-    height: "20%", // Ensure card takes up the full height of the swiper container
+    width: "100%",
+    height: 650,
     borderRadius: 10,
     backgroundColor: "green",
-    zIndex: 1,
-    paddingBottom: 600,
+    alignSelf: "center",
   },
-  // image: {
-  //   width: "100%",
-  //   height: "100%",
-  //   borderRadius: 10,
-  // },
-  // name: {
-  //   justifyContent: "flex-end",
-  //   alignItems: "center",
-  //   fontSize: 22,
-  //   fontWeight: "bold",
-  //   marginTop: 10,
-  //   color: "white",
-  //   backgroundColor: "rgba(0, 0, 0, 0.5)",
-  //   paddingHorizontal: 10,
-  //   paddingVertical: 15,
-  //   borderRadius: 5,
-  // },
+  image: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 10,
+  },
+  nameContainer: {
+    position: "absolute",
+    bottom: 20,
+    left: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 5,
+  },
+  nameText: {
+    fontSize: 22,
+    color: "white",
+  },
 });

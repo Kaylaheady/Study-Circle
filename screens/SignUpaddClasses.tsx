@@ -8,18 +8,21 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { supabase } from "../supabase";
 
-// Define RootStackParamList type
 type RootStackParamList = {
-  SignUpaddClasses: undefined;
-  NextSignUpScreen: undefined;
+  SignUpaddClasses: { userID: string };
+  Home: undefined;
 };
 
-// Define navigation type
 type SignUpClassesScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  "SignUpaddClasses"
+>;
+
+type SignUpaddClassesRouteProp = RouteProp<
   RootStackParamList,
   "SignUpaddClasses"
 >;
@@ -41,6 +44,8 @@ const classOptions = [
 ];
 
 const SignUpaddClasses: React.FC = () => {
+  const route = useRoute<SignUpaddClassesRouteProp>();
+  const { userID } = route.params;
   const navigation = useNavigation<SignUpClassesScreenNavigationProp>();
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -64,20 +69,16 @@ const SignUpaddClasses: React.FC = () => {
 
     setLoading(true);
     try {
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser();
-      if (userError || !user) throw new Error("User not found");
+      const insertData = selectedClasses.map((className) => ({
+        user_id: userID,
+        class_name: className,
+      }));
 
-      const { error } = await supabase
-        .from("profiles") // Adjust table name if needed
-        .update({ classes: selectedClasses })
-        .eq("id", user.id);
+      const { error } = await supabase.from("user_classes").insert(insertData);
 
       if (error) throw error;
 
-      navigation.navigate("NextSignUpScreen");
+      navigation.navigate("Home");
     } catch (error) {
       Alert.alert("Error", (error as Error).message);
     } finally {

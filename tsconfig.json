@@ -14,5 +14,5 @@
     "module": "esnext",
     "forceConsistentCasingInFileNames": true
   },
-  "extends": "expo/tsconfig.base"
+  "extends": "./node_modules/expo/tsconfig.base"
 }

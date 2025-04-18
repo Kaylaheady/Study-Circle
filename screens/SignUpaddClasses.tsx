@@ -12,7 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { supabase } from "../supabase";
 
-// Define RootStackParamList type
+//Define RootStackParamList type
 type RootStackParamList = {
   SignUpaddClasses: undefined;
   NextSignUpScreen: undefined;

@@ -13,7 +13,6 @@ type RootStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
   SignUpaddClasses: undefined;
-  Home: undefined;
 };
 
 export default function App() {

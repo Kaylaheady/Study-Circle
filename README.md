@@ -8,8 +8,8 @@ The app provides a simple way for users to create a profile, select their enroll
 We designed the app through 
 Figma: https://www.figma.com/design/RulKckHuCeWSLtV4WZY7oO/Study-Circle?node-id=0-1&t=K99LmhETnm0KlrqG-1
 
-RD Template: https://docs.google.com/document/d/1ejAPCugzGU_ApCVogwz-Re2MXIkVA94hp2BVRuzmozQ/edit?tab=t.0#heading=h.4i9gy9u5liy
+RD Template: https://docs.google.com/document/d/13yZvAP5_yKgHGJkr971pr8bk_51I9rki0zmquIoyxpc/edit?tab=t.0#heading=h.ei78z4uru13u
 
-IT Template: https://docs.google.com/document/d/1U7QRNrKfbCt3k4gYYLXz5l9T_c4HIEkj2k5aNQN_Z8k/edit?tab=t.0
+IT Template: https://docs.google.com/document/d/1FfrwKFAJToJTOdAO9qoScS0MXOXOGTjPWNUScihfGvo/edit?tab=t.0#heading=h.ogqb3cz8y97j
 
-Progress Report: https://docs.google.com/document/d/1ffJHh-EZmOh7kKahC53XuaK3a4PLWJLZmgV44S7i1zE/edit?tab=t.0
+Progress Report: https://docs.google.com/document/d/1Cp37WviNdr2C8ExCd3dpO7uohQcwV1NHJRHu9rSEXOg/edit?tab=t.0

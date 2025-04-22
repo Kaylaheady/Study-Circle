@@ -129,7 +129,7 @@ const SignUpScreen: React.FC = () => {
       <Text style={styles.text}>Name</Text>
       <TextInput style={styles.input} value={name} onChangeText={setName} />
 
-      <Text style={styles.text}>College Edu</Text>
+      <Text style={styles.text}>College Email</Text>
       <TextInput
         style={styles.input}
         value={email}

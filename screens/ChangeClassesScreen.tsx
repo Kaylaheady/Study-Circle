@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,17 +12,12 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { supabase } from "../supabase";
 
-// Define RootStackParamList type
+// Navigation setup
 type RootStackParamList = {
-  SignUpaddClasses: undefined;
-  NextSignUpScreen: undefined;
+  Profile: undefined;
 };
 
-// Define navigation type
-type SignUpClassesScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  "SignUpaddClasses"
->;
+type NavigationProps = StackNavigationProp<RootStackParamList, "Profile">;
 
 const classOptions = [
   "COP 4090L Software Engineering Capstone",
@@ -40,24 +35,55 @@ const classOptions = [
   "Marketing 101",
 ];
 
-const SignUpaddClasses: React.FC = () => {
-  const navigation = useNavigation<SignUpClassesScreenNavigationProp>();
+const ChangeClassesScreen: React.FC = () => {
+  const navigation = useNavigation<NavigationProps>();
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchClasses = async () => {
+      setLoading(true);
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) {
+        console.error("User fetch error:", userError);
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("users")
+        .select("classes")
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        console.error("Class fetch error:", error);
+      } else {
+        setSelectedClasses(data.classes || []);
+      }
+      setLoading(false);
+    };
+
+    fetchClasses();
+  }, []);
 
   const toggleClassSelection = (className: string) => {
     setSelectedClasses((prevSelected) =>
       prevSelected.includes(className)
         ? prevSelected.filter((c) => c !== className)
-        : [...prevSelected, className],
+        : [...prevSelected, className]
     );
   };
 
-  const handleSignUp = async () => {
+  const handleSave = async () => {
     if (selectedClasses.length === 0) {
       Alert.alert(
         "Error",
-        "Please select at least one class before proceeding.",
+        "Please select at least one class before saving changes."
       );
       return;
     }
@@ -71,13 +97,14 @@ const SignUpaddClasses: React.FC = () => {
       if (userError || !user) throw new Error("User not found");
 
       const { error } = await supabase
-        .from("profiles") // Adjust table name if needed
+        .from("users")
         .update({ classes: selectedClasses })
         .eq("id", user.id);
 
       if (error) throw error;
 
-      navigation.navigate("MainTabs"); //navigation.navigate("NextSignUpScreen");
+      Alert.alert("Success", "Classes updated successfully.");
+      navigation.goBack();
     } catch (error) {
       Alert.alert("Error", (error as Error).message);
     } finally {
@@ -85,26 +112,9 @@ const SignUpaddClasses: React.FC = () => {
     }
   };
 
-  // USED TO SKIP SIGN UP FOR TESTING:
- /* const handleSignUp = async () => {
-    if (selectedClasses.length === 0) {
-      Alert.alert(
-        "Error",
-        "Please select at least one class before proceeding.",
-      );
-      return;
-    }
-  
-    // Just log the selection for now
-    console.log("Mock Sign Up - Selected classes:", selectedClasses);
-  
-    // Navigate to the next screen
-    navigation.navigate("MainTabs"); //navigation.navigate("Home");
-  };*/
-
   return (
     <View style={styles.container}>
-      {/* Custom Header */}
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={30} color="#014AAD" />
@@ -112,7 +122,7 @@ const SignUpaddClasses: React.FC = () => {
       </View>
 
       {/* Title */}
-      <Text style={styles.title}>What classes are you in?</Text>
+      <Text style={styles.title}>Edit Your Classes</Text>
 
       {/* Class List */}
       <FlatList
@@ -138,14 +148,14 @@ const SignUpaddClasses: React.FC = () => {
         )}
       />
 
-      {/* Next Button */}
+      {/* Save Button */}
       <TouchableOpacity
         style={styles.nextButton}
-        onPress={handleSignUp}
+        onPress={handleSave}
         disabled={loading}
       >
         <Text style={styles.nextButtonText}>
-          {loading ? "Saving..." : "Sign Up"}
+          {loading ? "Saving..." : "Save Changes"}
         </Text>
       </TouchableOpacity>
     </View>
@@ -206,4 +216,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignUpaddClasses;
+export default ChangeClassesScreen;

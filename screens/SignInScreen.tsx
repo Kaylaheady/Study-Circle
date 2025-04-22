@@ -42,7 +42,7 @@ const SignInScreen: React.FC = () => {
     if (error) {
       Alert.alert("Sign In Failed", error.message);
     } else {
-      navigation.navigate("Home");
+      navigation.navigate("MainTabs"); //navigation.navigate("Home");
     }
   };
 
@@ -50,7 +50,7 @@ const SignInScreen: React.FC = () => {
     <View style={styles.container}>
       {/* Custom Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+        <TouchableOpacity onPress={() => navigation.navigate("MainTabs")}>
           <Ionicons name="arrow-forward" size={30} color="#014AAD" />
         </TouchableOpacity>
       </View>

@@ -134,12 +134,14 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginTop: 60,
   },
+ 
   swiperContainer: {
     width: 380,
     height: 640,
     marginTop: -50,
     paddingBottom: 0,
   },
+  
   card: {
     width: "100%",
     height: "90%",

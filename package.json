@@ -2,7 +2,8 @@
   "dependencies": {
     "@expo-google-fonts/inter": "^0.2.3",
     "@react-native-picker/picker": "2.9.0",
-    "@react-navigation/bottom-tabs": "^7.3.9",
+    "@react-navigation/bottom-tabs": "^7.3.10",
+    "@react-navigation/drawer": "^7.3.9",
     "@react-navigation/stack": "^7.1.2",
     "@supabase/supabase-js": "^2.49.3",
     "bcryptjs": "^3.0.2",
